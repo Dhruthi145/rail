@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RailGuard AI | Railway Track Intrusion Detection{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Core Design System CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Backdrop for Mobile/Tablet Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- ==========================================
+             LEFT SIDEBAR NAVIGATION
+             ========================================== -->
+        <aside class="app-sidebar" id="appSidebar">
+            <!-- Sidebar Header & Logo -->
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='images/logo/railguard-logo.svg') }}" alt="RailGuard AI Logo" class="sidebar-logo">
+                <div class="sidebar-brand-text">
+                    <h1>RailGuard AI</h1>
+                    <p>Smart Railway Protection</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav-container">
+                <div class="nav-section-title">Surveillance Control</div>
+
+                <a href="{{ url_for('dashboard') }}" class="nav-link-rail {% if request.path == '/' %}active{% endif %}">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{{ url_for('monitoring') }}" class="nav-link-rail {% if request.path == '/monitoring' %}active{% endif %}">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Live Monitoring</span>
+                </a>
+
+                <a href="{{ url_for('incidents_page') }}" class="nav-link-rail {% if request.path in ['/incidents', '/logs_page'] %}active{% endif %}">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Incidents</span>
+                </a>
+
+                <a href="{{ url_for('workers_page') }}" class="nav-link-rail {% if request.path == '/workers' %}active{% endif %}">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Worker Verification</span>
+                </a>
+
+                <a href="{{ url_for('analytics_page') }}" class="nav-link-rail {% if request.path == '/analytics' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+
+                <a href="{{ url_for('settings_page') }}" class="nav-link-rail {% if request.path == '/settings' %}active{% endif %}">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Settings & ROI</span>
+                </a>
+            </nav>
+
+            <!-- Bottom System Status Indicator -->
+            <div class="sidebar-footer">
+                <div class="status-pill-sidebar">
+                    <span class="text-white-50">System Status</span>
+                    <span class="d-flex align-items-center gap-2 text-white fw-bold">
+                        <span class="status-dot dot-safe"></span>
+                        Operational
+                    </span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             MAIN CONTENT & TOPBAR
+             ========================================== -->
+        <div class="app-main">
+            <!-- Top Navigation Bar -->
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <button class="topbar-toggle-btn" id="sidebarToggleBtn" title="Toggle Navigation Menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="page-title-badge">
+                        <h2>{% block page_title %}Railway Safety Console{% endblock %}</h2>
+                        <span class="breadcrumb-text">Real-Time Track Intrusion & Deep Learning Monitoring</span>
+                    </div>
+                </div>
+
+                <div class="topbar-center">
+                    <div class="search-input-group">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="globalSearchInput" placeholder="Search camera, worker ID, train...">
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- System Online Indicator -->
+                    <div class="system-online-pill">
+                        <span class="status-dot dot-safe"></span>
+                        <span>System Online</span>
+                    </div>
+
+                    <!-- Notification Bell Dropdown -->
+                    <div class="dropdown">
+                        <button class="notif-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="System Notifications">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="notif-badge" id="topbarNotifBadge">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="width: 330px;" id="topbarNotifMenu">
+                            <li class="p-2 border-bottom fw-bold text-primary small d-flex justify-content-between align-items-center">
+                                <span>Recent Safety Alerts</span>
+                                <span class="badge bg-primary" id="topbarNotifCountText">0 Events</span>
+                            </li>
+                            <div id="topbarNotifList">
+                                <li class="p-3 text-center text-muted small">
+                                    <i class="fa-solid fa-circle-check text-success me-1"></i> All sectors nominal. No active alerts.
+                                </li>
+                            </div>
+                            <li class="pt-2 border-top text-center">
+                                <a href="{{ url_for('incidents_page') }}" class="small text-primary fw-semibold text-decoration-none">
+                                    View Full Incident Ledger →
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Live System Clock -->
+                    <div class="clock-display">
+                        <span class="clock-time" id="liveClockTime">10:24 AM</span>
+                        <span class="clock-date" id="liveClockDate">05 Sep 2026</span>
+                    </div>
+
+                    <!-- User / Operator Profile -->
+                    {% if is_authenticated %}
+                    <div class="dropdown">
+                        <button class="operator-profile-btn dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="operator-avatar">
+                                {{ current_user[:2].upper() }}
+                            </div>
+                            <div class="operator-info d-none d-sm-block">
+                                <div class="operator-name">{{ current_user }}</div>
+                                <div class="operator-role">{{ user_role }}</div>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                            <li><span class="dropdown-item-text small text-muted">Operator Active</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item small" href="{{ url_for('settings_page') }}"><i class="fa-solid fa-sliders me-2 text-muted"></i>Settings</a></li>
+                            <li><a class="dropdown-item small text-danger" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Sign Out</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('login_page') }}" class="btn btn-rail-primary btn-sm">
+                        <i class="fa-solid fa-lock me-1"></i> Control Room Login
+                    </a>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- Main Page Body Container -->
+            <main class="content-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                                <i class="fa-solid fa-bell me-2"></i>{{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Dashboard Footer -->
+            <footer class="app-footer">
+                <div>
+                    <strong>RailGuard AI</strong> — Intelligent Railway Protection System
+                </div>
+                <div class="footer-meta">
+                    <span><i class="fa-solid fa-code-branch text-primary"></i> System Version: <strong>v1.0</strong></span>
+                    <span><i class="fa-solid fa-server text-info"></i> Backend: <strong>Flask</strong></span>
+                    <span><i class="fa-solid fa-brain text-success"></i> AI: <strong>YOLOv8</strong></span>
+                    <span><i class="fa-solid fa-database text-warning"></i> Database: <strong>SQLite</strong></span>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core Application Dashboard JS -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

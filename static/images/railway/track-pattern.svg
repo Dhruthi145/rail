@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="24" viewBox="0 0 60 24">
+  <!-- Two parallel rails -->
+  <line x1="0" y1="6" x2="60" y2="6" stroke="#94A3B8" stroke-width="2" stroke-opacity="0.35"/>
+  <line x1="0" y1="18" x2="60" y2="18" stroke="#94A3B8" stroke-width="2" stroke-opacity="0.35"/>
+  
+  <!-- Sleepers / Ties -->
+  <line x1="10" y1="2" x2="10" y2="22" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-opacity="0.3"/>
+  <line x1="30" y1="2" x2="30" y2="22" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-opacity="0.3"/>
+  <line x1="50" y1="2" x2="50" y2="22" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-opacity="0.3"/>
+</svg>

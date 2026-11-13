@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Worker Verification & Management | RailGuard AI{% endblock %}
+{% block page_title %}Worker Verification & Biometric Database{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <!-- Top Introduction Banner -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h4 class="fw-bold text-primary mb-1">
+                <i class="fa-solid fa-id-card-clip me-2"></i> Track Personnel Verification & Biometrics
+            </h4>
+            <p class="text-muted small mb-0">
+                Track maintenance and signal engineers regularly access rail corridors. RailGuard AI verifies detected individuals via DeepFace biometric analysis before classifying any detection as an intrusion.
+            </p>
+        </div>
+        <div>
+            <button class="btn btn-rail-primary" data-bs-toggle="modal" data-bs-target="#registerWorkerModal">
+                <i class="fa-solid fa-user-plus me-1"></i> Register Authorized Worker
+            </button>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         Split View: Live Person Capture / Verification Test & Worker Database
+         ====================================================================== -->
+    <div class="row g-4">
+        <!-- Left: Live Person Capture & Verification Test -->
+        <div class="col-lg-5">
+            <div class="rail-card h-100">
+                <div class="rail-card-header">
+                    <h3 class="rail-card-title">
+                        <i class="fa-solid fa-camera-viewfinder text-primary"></i>
+                        Live Person Capture & Verification
+                    </h3>
+                    <span class="badge bg-primary text-white small">DeepFace / VGG</span>
+                </div>
+                <div class="rail-card-body">
+                    <p class="small text-secondary mb-3">
+                        Upload or capture a personnel snapshot from CCTV or handheld ID terminal to test against authorized employee biometric database.
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Upload Personnel Snapshot</label>
+                        <input type="file" id="testFaceInput" class="form-control" accept="image/*">
+                    </div>
+
+                    <!-- Image Preview Area -->
+                    <div class="text-center p-3 bg-light rounded border mb-3">
+                        <img id="testFacePreview" src="" class="img-fluid rounded border d-none" style="max-height: 200px; object-fit: cover;" alt="Captured Person Face Preview">
+                        <div id="previewPlaceholder" class="text-muted small py-3">
+                            <i class="fa-solid fa-user-shield fs-1 text-secondary mb-2 d-block"></i>
+                            Select a face image to preview detection & verification.
+                        </div>
+                    </div>
+
+                    <button class="btn btn-rail-primary w-100" id="btnRunFaceTest">
+                        <i class="fa-solid fa-id-card-clip me-1"></i> Verify Captured Face
+                    </button>
+
+                    <!-- Dynamic Verification Result Box -->
+                    <div id="testFaceResultBox" class="d-none"></div>
+
+                    <div class="mt-4 p-3 bg-light rounded border border-subtle small text-muted">
+                        <div class="fw-bold text-dark mb-1"><i class="fa-solid fa-circle-info text-info me-1"></i> Two-Stage Verification Policy:</div>
+                        <ul class="mb-0 ps-3">
+                            <li><strong>Stage 1 - Safety Costume (PPE):</strong> Detects Yellow Safety Helmet and High-Vis Fluorescent Orange Vest. Non-PPE persons are immediately flagged as Intruders.</li>
+                            <li><strong>Stage 2 - Facial Biometrics:</strong> DeepFace biometric verification against registered personnel (EMP001).</li>
+                            <li><strong>Authorized Status:</strong> Granted only when PPE costume is verified and face matches registered worker (EMP001).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Authorized Workers Database Table -->
+        <div class="col-lg-7">
+            <div class="rail-card h-100">
+                <div class="rail-card-header">
+                    <h3 class="rail-card-title">
+                        <i class="fa-solid fa-users text-primary"></i>
+                        Authorized Railway Personnel
+                    </h3>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                        <strong id="authorizedWorkersCount">0</strong> Registered
+                    </span>
+                </div>
+                <div class="rail-card-body p-0">
+                    <div class="rail-table-container border-0 rounded-0 shadow-none">
+                        <table class="rail-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Role</th>
+                                    <th>Biometrics</th>
+                                    <th>Status</th>
+                                    <th>Registered</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workersTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-muted">
+                                        <i class="fa-solid fa-spinner fa-spin me-2"></i> Loading personnel database...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     Register Authorized Worker Modal
+     ========================================================================== -->
+<div class="modal fade" id="registerWorkerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa-solid fa-user-plus me-2"></i> Register Authorized Worker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="registerWorkerForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Employee ID *</label>
+                        <input type="text" name="employee_id" class="form-control font-mono" placeholder="e.g. EMP_101" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Rajesh Kumar" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department *</label>
+                        <select name="department" class="form-select" required>
+                            <option value="Track Maintenance">Track Maintenance</option>
+                            <option value="Signal & Telecom">Signal & Telecom (S&T)</option>
+                            <option value="OHE Electrical">OHE Electrical Infrastructure</option>
+                            <option value="Safety Inspection">Safety & Line Inspection</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Face Image for Biometric Matching *</label>
+                        <input type="file" name="face_image" id="workerImageInput" class="form-control" accept="image/*" required>
+                    </div>
+                    <div class="text-center p-2 bg-light rounded border mb-2">
+                        <img id="workerImagePreview" src="" class="img-fluid rounded border d-none" style="max-height: 140px; object-fit: cover;" alt="Worker Preview">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-rail-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-rail-primary">
+                        <i class="fa-solid fa-plus me-1"></i> Complete Registration
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/workers.js') }}"></script>
+{% endblock %}

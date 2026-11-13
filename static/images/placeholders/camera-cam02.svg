@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sky2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="225" fill="url(#sky2)" />
+  <!-- Curve track perspective -->
+  <path d="M 220 90 Q 210 140 120 225" stroke="#94A3B8" stroke-width="4" fill="none"/>
+  <path d="M 250 90 Q 240 140 180 225" stroke="#94A3B8" stroke-width="4" fill="none"/>
+  <path d="M 280 90 Q 270 140 240 225" stroke="#64748B" stroke-width="3" fill="none"/>
+  <path d="M 305 90 Q 295 140 290 225" stroke="#64748B" stroke-width="3" fill="none"/>
+  <!-- Switch / Junction lines -->
+  <line x1="200" y1="120" x2="270" y2="170" stroke="#F59E0B" stroke-width="2" stroke-dasharray="3 3"/>
+  <!-- Signal post -->
+  <line x1="330" y1="60" x2="330" y2="200" stroke="#64748B" stroke-width="3"/>
+  <rect x="322" y="55" width="16" height="30" rx="3" fill="#0B132B"/>
+  <circle cx="330" cy="65" r="4" fill="#10B981"/>
+  <circle cx="330" cy="76" r="4" fill="#334155"/>
+  <!-- HUD -->
+  <rect x="12" y="12" width="130" height="24" rx="4" fill="#0B3B60" fill-opacity="0.8"/>
+  <circle cx="24" cy="24" r="4" fill="#10B981"/>
+  <text x="34" y="28" fill="#FFFFFF" font-family="monospace" font-size="11" font-weight="bold">CAM-02 KM 246/2</text>
+  <rect x="338" y="12" width="50" height="20" rx="3" fill="#DC2626" fill-opacity="0.9"/>
+  <text x="348" y="26" fill="#FFFFFF" font-family="sans-serif" font-size="10" font-weight="bold">● LIVE</text>
+</svg>

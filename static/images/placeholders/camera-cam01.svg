@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cbg1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="sky1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background / Sky -->
+  <rect width="400" height="225" fill="url(#sky1)" />
+
+  <!-- Distance Track Perspective -->
+  <polygon points="175,100 225,100 360,225 40,225" fill="#0F172A" opacity="0.85"/>
+  
+  <!-- Sleepers / Ties -->
+  <line x1="170" y1="108" x2="230" y2="108" stroke="#475569" stroke-width="2"/>
+  <line x1="160" y1="118" x2="240" y2="118" stroke="#475569" stroke-width="2.5"/>
+  <line x1="145" y1="130" x2="255" y2="130" stroke="#475569" stroke-width="3"/>
+  <line x1="125" y1="148" x2="275" y2="148" stroke="#475569" stroke-width="3.5"/>
+  <line x1="100" y1="170" x2="300" y2="170" stroke="#475569" stroke-width="4.5"/>
+  <line x1="68" y1="200" x2="332" y2="200" stroke="#475569" stroke-width="5.5"/>
+
+  <!-- Steel Rails (Converging) -->
+  <line x1="185" y1="100" x2="110" y2="225" stroke="#94A3B8" stroke-width="3.5"/>
+  <line x1="215" y1="100" x2="290" y2="225" stroke="#94A3B8" stroke-width="3.5"/>
+
+  <!-- ROI Overlay Polygon -->
+  <polygon points="170,112 230,112 320,215 80,215" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-dasharray="4 3"/>
+
+  <!-- Catenary Pole Mast -->
+  <line x1="60" y1="40" x2="60" y2="210" stroke="#64748B" stroke-width="3"/>
+  <line x1="60" y1="55" x2="190" y2="60" stroke="#64748B" stroke-width="1.5"/>
+  <line x1="60" y1="75" x2="190" y2="78" stroke="#64748B" stroke-width="1.2"/>
+
+  <!-- HUD Graphic Stamp -->
+  <rect x="12" y="12" width="130" height="24" rx="4" fill="#0B3B60" fill-opacity="0.8"/>
+  <circle cx="24" cy="24" r="4" fill="#10B981"/>
+  <text x="34" y="28" fill="#FFFFFF" font-family="monospace" font-size="11" font-weight="bold">CAM-01 KM 245/8</text>
+
+  <!-- Live Tag -->
+  <rect x="338" y="12" width="50" height="20" rx="3" fill="#DC2626" fill-opacity="0.9"/>
+  <text x="348" y="26" fill="#FFFFFF" font-family="sans-serif" font-size="10" font-weight="bold">● LIVE</text>
+
+  <!-- Crosshair in center -->
+  <line x1="190" y1="112" x2="210" y2="112" stroke="#38BDF8" stroke-width="1"/>
+  <line x1="200" y1="102" x2="200" y2="122" stroke="#38BDF8" stroke-width="1"/>
+</svg>

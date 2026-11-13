@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Incident History & Audit Ledger | RailGuard AI{% endblock %}
+{% block page_title %}Incident History & Tamper-Evident Ledger{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <!-- Header Control Banner -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h4 class="fw-bold text-primary mb-1">
+                <i class="fa-solid fa-clock-rotate-left me-2"></i> Track Intrusion Incident Ledger
+            </h4>
+            <p class="text-muted small mb-0">
+                Immutable, cryptographically chained safety incident log. Records are linked using SHA-256 hashes to guarantee a tamper-evident audit trail.
+            </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-rail-primary" id="btnVerifyChain">
+                <i class="fa-solid fa-shield-halved me-1"></i> Verify Ledger Integrity
+            </button>
+        </div>
+    </div>
+
+    <!-- Integrity Status Alert Box -->
+    <div id="chainVerificationResult" class="d-none"></div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="p-3 bg-white rounded border border-subtle d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0 text-muted small fw-bold">Filter Risk:</label>
+                <select class="form-select form-select-sm" id="filterRisk" style="width: 150px;">
+                    <option value="ALL">All Risk Levels</option>
+                    <option value="CRITICAL">🔴 Critical Risk</option>
+                    <option value="HIGH">🟠 High Risk</option>
+                    <option value="WARNING">🟡 Warning</option>
+                    <option value="SAFE">🟢 Safe</option>
+                </select>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0 text-muted small fw-bold">Search:</label>
+                <input type="text" class="form-control form-control-sm" id="incidentSearch" placeholder="Search ID, camera, worker..." style="width: 220px;">
+            </div>
+        </div>
+
+        <div class="small text-muted">
+            Total Incident Records: <strong class="text-primary font-mono" id="totalIncidentsCount">0</strong>
+        </div>
+    </div>
+
+    <!-- Incident History Table Container -->
+    <div class="rail-table-container">
+        <table class="rail-table">
+            <thead>
+                <tr>
+                    <th>Incident ID</th>
+                    <th>Timestamp</th>
+                    <th>Camera</th>
+                    <th>Location</th>
+                    <th>Person Status</th>
+                    <th>Verification</th>
+                    <th>Train Status</th>
+                    <th>Speed</th>
+                    <th>Distance</th>
+                    <th>TTC</th>
+                    <th>Risk Level</th>
+                    <th>Alert Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="incidentsTableBody">
+                <tr>
+                    <td colspan="13" class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-spinner fa-spin me-2"></i> Loading incident records from ledger...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     Incident Details Modal
+     ========================================================================== -->
+<div class="modal fade" id="incidentDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="incidentModalTitle">
+                    <i class="fa-solid fa-file-shield me-2"></i> Incident Record Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="incidentModalBody">
+                <!-- Dynamically populated via incidents.js -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-rail-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/incidents.js') }}"></script>
+{% endblock %}

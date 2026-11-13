@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sky3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="225" fill="url(#sky3)" />
+  <!-- Railway Yard tracks -->
+  <line x1="20" y1="220" x2="160" y2="90" stroke="#94A3B8" stroke-width="3"/>
+  <line x1="70" y1="220" x2="180" y2="90" stroke="#94A3B8" stroke-width="3"/>
+  <line x1="140" y1="220" x2="210" y2="90" stroke="#94A3B8" stroke-width="3"/>
+  <line x1="220" y1="220" x2="250" y2="90" stroke="#94A3B8" stroke-width="3"/>
+  <line x1="300" y1="220" x2="280" y2="90" stroke="#94A3B8" stroke-width="3"/>
+  <line x1="370" y1="220" x2="310" y2="90" stroke="#94A3B8" stroke-width="3"/>
+  <!-- Platform canopy on left -->
+  <polygon points="10,60 120,60 100,120 0,130" fill="#334155" opacity="0.6"/>
+  <!-- HUD -->
+  <rect x="12" y="12" width="140" height="24" rx="4" fill="#0B3B60" fill-opacity="0.8"/>
+  <circle cx="24" cy="24" r="4" fill="#10B981"/>
+  <text x="34" y="28" fill="#FFFFFF" font-family="monospace" font-size="11" font-weight="bold">CAM-03 YARD NORTH</text>
+  <rect x="338" y="12" width="50" height="20" rx="3" fill="#DC2626" fill-opacity="0.9"/>
+  <text x="348" y="26" fill="#FFFFFF" font-family="sans-serif" font-size="10" font-weight="bold">● LIVE</text>
+</svg>

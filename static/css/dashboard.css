@@ -1,0 +1,550 @@
+/* ==========================================================================
+   RAILGUARD AI - DASHBOARD SPECIFIC STYLES
+   Train Track Animations, KPI Cards, Pipeline Visualization
+   ========================================================================== */
+
+/* Header with Subtle Moving Train Track */
+.dashboard-header-card {
+    background: linear-gradient(135deg, #0B3B60 0%, #104C7A 60%, #165D94 100%);
+    border-radius: var(--radius-lg);
+    padding: 24px 32px;
+    color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(11, 59, 96, 0.16);
+}
+
+.dashboard-header-content {
+    position: relative;
+    z-index: 2;
+    max-width: 650px;
+}
+
+.dashboard-header-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-header-subtitle {
+    color: #BAE6FD;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.dashboard-header-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.header-chip {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(4px);
+    border-radius: var(--radius-pill);
+    padding: 4px 12px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Moving Train Track Container */
+.dashboard-track-animation {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 480px;
+    height: 70px;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.85;
+}
+
+/* Continuous Railway Track Line */
+.track-rail-line {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #7DD3FC;
+    opacity: 0.5;
+}
+.track-rail-line::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #7DD3FC;
+    opacity: 0.5;
+}
+
+/* Sleepers / Ties Pattern */
+.track-sleepers {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    width: 200%;
+    height: 16px;
+    background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.25) 0px, rgba(255, 255, 255, 0.25) 3px, transparent 3px, transparent 18px);
+}
+
+/* Animated Train Silhouette */
+.animated-header-train {
+    position: absolute;
+    bottom: 16px;
+    width: 140px;
+    height: 36px;
+    background-image: url('../images/railway/train-silhouette.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: trainMoveHeader 16s linear infinite;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes trainMoveHeader {
+    0% {
+        transform: translateX(-160px);
+    }
+    100% {
+        transform: translateX(500px);
+    }
+}
+
+/* ==========================================================================
+   4 Primary KPI Statistics Cards
+   ========================================================================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.kpi-stat-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    transition: all var(--trans-fast);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-elevated);
+    border-color: #CBD5E1;
+}
+
+.kpi-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+.kpi-cameras::before { background: var(--rail-blue); }
+.kpi-personnel::before { background: var(--status-safe); }
+.kpi-incidents::before { background: var(--status-critical); }
+.kpi-trains::before { background: var(--status-warning); }
+
+.kpi-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.kpi-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+}
+
+.kpi-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+.kpi-cameras .kpi-icon-wrap { background: #E0F2FE; color: var(--rail-blue); }
+.kpi-personnel .kpi-icon-wrap { background: #ECFDF5; color: var(--status-safe); }
+.kpi-incidents .kpi-icon-wrap { background: #FEF2F2; color: var(--status-critical); }
+.kpi-trains .kpi-icon-wrap { background: #FFFBEB; color: var(--status-warning); }
+
+.kpi-number {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.kpi-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.kpi-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+.kpi-cameras .kpi-status-badge { color: var(--rail-blue); }
+.kpi-personnel .kpi-status-badge { color: #059669; }
+.kpi-incidents .kpi-status-badge { color: var(--status-critical); }
+.kpi-trains .kpi-status-badge { color: #D97706; }
+
+/* Mini Trendline SVG */
+.mini-trendline {
+    width: 64px;
+    height: 24px;
+}
+
+/* ==========================================================================
+   Detection → Verification → Risk AI Pipeline Flow
+   ========================================================================== */
+.pipeline-flow-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 22px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+}
+
+.pipeline-flow-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.pipeline-steps-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 10px 0;
+    overflow-x: auto;
+}
+
+.pipeline-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 90px;
+    z-index: 2;
+    position: relative;
+}
+
+.pipeline-node-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #F1F5F9;
+    border: 2px solid #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--text-secondary);
+    transition: all var(--trans-fast);
+    margin-bottom: 8px;
+}
+
+.pipeline-node.completed .pipeline-node-icon {
+    background: #ECFDF5;
+    border-color: var(--status-safe);
+    color: var(--status-safe);
+}
+.pipeline-node.processing .pipeline-node-icon {
+    background: #E0F2FE;
+    border-color: var(--rail-blue);
+    color: var(--rail-blue);
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+    animation: pulse-node 1.8s infinite;
+}
+.pipeline-node.waiting .pipeline-node-icon {
+    background: #F8FAFC;
+    border-color: #E2E8F0;
+    color: #94A3B8;
+}
+
+@keyframes pulse-node {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+.pipeline-node-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    letter-spacing: 0.3px;
+}
+
+.pipeline-node-status {
+    font-size: 10px;
+    font-weight: 600;
+}
+.pipeline-node.completed .pipeline-node-status { color: var(--status-safe); }
+.pipeline-node.processing .pipeline-node-status { color: var(--rail-blue); }
+.pipeline-node.waiting .pipeline-node-status { color: #94A3B8; }
+
+/* Connecting Animated Line */
+.pipeline-connector {
+    flex: 1;
+    height: 3px;
+    background: #E2E8F0;
+    margin: 0 8px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+.pipeline-connector.active {
+    background: #BAE6FD;
+}
+.pipeline-connector.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    background: var(--rail-blue);
+    animation: flowConnector 1.4s infinite ease-in-out;
+}
+
+@keyframes flowConnector {
+    0% { left: -30%; }
+    100% { left: 100%; }
+}
+
+/* ==========================================================================
+   Visual Risk Level Indicator
+   ========================================================================== */
+.risk-meter-container {
+    background: #F8FAFC;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin-top: 16px;
+}
+
+.risk-meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.risk-lbl-safe { color: var(--status-safe); }
+.risk-lbl-warning { color: var(--status-warning); }
+.risk-lbl-high { color: var(--status-high); }
+.risk-lbl-critical { color: var(--status-critical); }
+
+.risk-track-bar {
+    height: 8px;
+    background: #E2E8F0;
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    overflow: visible;
+}
+
+.risk-segment {
+    flex: 1;
+    height: 100%;
+}
+.seg-safe { background: #A7F3D0; border-radius: 4px 0 0 4px; }
+.seg-warning { background: #FDE68A; }
+.seg-high { background: #FED7AA; }
+.seg-critical { background: #FECACA; border-radius: 0 4px 4px 0; }
+
+.risk-pointer {
+    position: absolute;
+    top: -6px;
+    left: 12%; /* Adjusted dynamically by JS */
+    width: 20px;
+    height: 20px;
+    background: #FFFFFF;
+    border: 3px solid var(--status-safe);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease;
+    z-index: 3;
+}
+
+/* ==========================================================================
+   Live System Alerts Feed & System Health
+   ========================================================================== */
+.alert-feed-list {
+    max-height: 360px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 4px;
+}
+.alert-feed-list::-webkit-scrollbar {
+    width: 4px;
+}
+.alert-feed-list::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+
+.alert-feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: #F8FAFC;
+    border: 1px solid var(--border-subtle);
+    transition: all var(--trans-fast);
+    animation: slideInDown 0.3s ease;
+}
+.alert-feed-item:hover {
+    background: #FFFFFF;
+    box-shadow: var(--shadow-sm);
+}
+.alert-feed-item.alert-critical {
+    border-left: 4px solid var(--status-critical);
+    background: #FEF2F2;
+}
+.alert-feed-item.alert-high {
+    border-left: 4px solid var(--status-high);
+    background: #FFF7ED;
+}
+.alert-feed-item.alert-warning {
+    border-left: 4px solid var(--status-warning);
+    background: #FFFBEB;
+}
+.alert-feed-item.alert-safe {
+    border-left: 4px solid var(--status-safe);
+    background: #F0FDF4;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-feed-icon {
+    font-size: 16px;
+    margin-top: 2px;
+}
+.alert-feed-content {
+    flex: 1;
+    font-size: 12.5px;
+}
+.alert-feed-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+.alert-feed-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+.alert-feed-desc {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+/* System Health Card */
+.health-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+.health-item {
+    background: #F8FAFC;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.health-item-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+.health-item-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Responsive Dashboard */
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-track-animation {
+        display: none;
+    }
+    .pipeline-steps-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .pipeline-connector {
+        width: 2px;
+        height: 18px;
+        margin: 0;
+    }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Room Operator Login | RailGuard AI</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Core Design System CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .login-canvas-bg {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0B2238 0%, #0B3B60 50%, #165D94 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+        }
+        .login-track-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background-image: url("/static/images/railway/track-pattern.svg");
+            background-repeat: repeat-x;
+            background-size: 80px 24px;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        .login-box {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 50px rgba(11, 35, 56, 0.4);
+            width: 100%;
+            max-width: 440px;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+        .login-header {
+            background: #FAFCFE;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 32px 28px 24px 28px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-canvas-bg">
+        <div class="login-track-bg"></div>
+
+        <div class="login-box">
+            <!-- Header -->
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='images/logo/railguard-logo.svg') }}" width="64" height="64" class="mb-3" alt="RailGuard AI Logo">
+                <h3 class="fw-bold text-primary mb-1">RailGuard AI</h3>
+                <p class="text-muted small mb-0">Railway Safety & Track Intrusion Surveillance Console</p>
+            </div>
+
+            <!-- Login Form Body -->
+            <div class="p-4">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} py-2 px-3 small mb-3">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i> {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('login_page') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Operator Badge ID / Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-id-badge"></i></span>
+                            <input type="text" name="username" class="form-control font-mono" placeholder="e.g. OPERATOR_01" value="{{ username or 'OPERATOR_01' }}" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Security Access Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-key"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="••••••••" value="admin123" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-rail-primary w-100 py-2 mb-3">
+                        <i class="fa-solid fa-shield-check me-2"></i> Access Control Room
+                    </button>
+
+                    <div class="p-3 bg-light rounded border small text-muted text-center">
+                        <i class="fa-solid fa-lock text-success me-1"></i> Authorized Railway Control Room Personnel Only.
+                        <div class="mt-1" style="font-size: 11px;">Default Credentials: <code>OPERATOR_01</code> / <code>admin123</code></div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="py-3 px-4 bg-light border-top text-center text-muted" style="font-size: 11.5px;">
+                RailGuard AI v1.0 • SHA-256 Tamper-Evident Security
+            </div>
+        </div>
+    </div>
+</body>
+</html>

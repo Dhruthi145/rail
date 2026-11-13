@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | RailGuard AI Control Room{% endblock %}
+{% block page_title %}Operational Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/monitoring.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- ==========================================================================
+     Header Banner with Animated Moving Train Track
+     ========================================================================== -->
+<div class="dashboard-header-card">
+    <div class="dashboard-header-content">
+        <h2 class="dashboard-header-title">
+            Good Morning, Control Room 👋
+        </h2>
+        <p class="dashboard-header-subtitle">
+            Monitor railway tracks in real-time and ensure safe railway operations with AI deep learning detection, biometric worker verification, and kinematic risk assessment.
+        </p>
+        <div class="dashboard-header-chips">
+            <span class="header-chip"><i class="fa-solid fa-radar text-info"></i> YOLOv8 PyTorch Active</span>
+            <span class="header-chip"><i class="fa-solid fa-shield-halved text-success"></i> Active Geofencing</span>
+            <span class="header-chip"><i class="fa-solid fa-id-card-clip text-primary"></i> DeepFace / VGG-Face</span>
+            <span class="header-chip"><i class="fa-solid fa-shield-check text-white"></i> SHA-256 Tamper-Evident Logs</span>
+        </div>
+    </div>
+
+    <!-- Subtle Moving Train Track Animation -->
+    <div class="dashboard-track-animation">
+        <div class="track-sleepers"></div>
+        <div class="track-rail-line"></div>
+        <div class="animated-header-train"></div>
+    </div>
+</div>
+
+
+
+<!-- ==========================================================================
+     Middle Row: Live CCTV Preview & Live Detection Summary
+     ========================================================================== -->
+<div class="row g-4 mb-4">
+    <!-- Live CCTV Preview Card -->
+    <div class="col-lg-8">
+        <div class="cctv-card">
+            <div class="cctv-header">
+                <div class="cctv-cam-title">
+                    <h3>CAM-01</h3>
+                    <span class="cctv-location-tag">KM 245/8 MAIN CORRIDOR</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="cctv-live-badge">
+                        <span class="cctv-live-dot"></span>
+                        LIVE
+                    </span>
+                    <a href="{{ url_for('monitoring') }}" class="btn btn-sm btn-outline-primary py-1 px-3">
+                        <i class="fa-solid fa-expand me-1"></i> Full Monitor
+                    </a>
+                </div>
+            </div>
+
+            <!-- Video Player Viewport -->
+            <div class="video-stage-container">
+                <img src="{{ url_for('video_feed') }}" class="cctv-stream-element" alt="Railway Track CCTV Stream">
+                <!-- Top HUD Stamps -->
+                <div class="hud-stamp-top">
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-camera text-info"></i>
+                        <span>CAM-01 | KM 245/8</span>
+                    </div>
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-clock text-warning"></i>
+                        <span id="hudTimestamp">10:24:15 AM</span>
+                    </div>
+                </div>
+
+                <div class="hud-stamp-bottom">
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-draw-polygon text-warning"></i>
+                        <span>Track ROI: Active Zone</span>
+                    </div>
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-bolt text-success"></i>
+                        <span>Inference: YOLOv8 PyTorch</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cctv-toolbar">
+                <div class="cctv-toolbar-left">
+                    <span><i class="fa-solid fa-video me-1 text-primary"></i> 1080p @ 29.8 FPS</span>
+                    <span><i class="fa-solid fa-shield-halved me-1 text-success"></i> DeepFace Engine Armed</span>
+                </div>
+                <div class="cctv-toolbar-right">
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="btnTestAlarmDash" title="Test Emergency Alarm Sound">
+                        <i class="fa-solid fa-volume-high me-1"></i> Test Alarm
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="btnToggleSoundDash" title="Mute or Unmute Safety Siren">
+                        <i class="fa-solid fa-bell me-1"></i> Sound: ON
+                    </button>
+                    <a href="{{ url_for('monitoring') }}" class="btn btn-rail-primary btn-sm">
+                        <i class="fa-solid fa-satellite-dish me-1"></i> Full Monitor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detection Summary Side Panel -->
+    <div class="col-lg-4">
+        <div class="detection-summary-card h-100">
+            <div class="detection-summary-header">
+                <h4><i class="fa-solid fa-chart-simple text-primary"></i> Detection Summary</h4>
+                <span id="telemetryRiskBadge" class="badge-risk badge-risk-safe">
+                    <i class="fa-solid fa-shield-halved"></i> SAFE
+                </span>
+            </div>
+
+            <div class="telemetry-metrics-list">
+                <!-- Metric 1: Persons Detected -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-info-subtle text-info"><i class="fa-solid fa-person"></i></div>
+                        <span class="metric-name">Persons Detected</span>
+                    </div>
+                    <div class="metric-val" id="telemetryPersonsSummary">01</div>
+                </div>
+
+                <!-- Metric 2: Trains Detected -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-warning-subtle text-warning"><i class="fa-solid fa-train"></i></div>
+                        <span class="metric-name">Trains Detected</span>
+                    </div>
+                    <div class="metric-val" id="telemetryTrainsSummary">01</div>
+                </div>
+
+                <!-- Metric 3: Distance -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-primary-subtle text-primary"><i class="fa-solid fa-ruler-horizontal"></i></div>
+                        <span class="metric-name">Distance</span>
+                    </div>
+                    <div class="metric-val" id="telemetryDistance">156.0 <span class="metric-val-unit">m</span></div>
+                </div>
+
+                <!-- Metric 4: Train Speed -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-secondary-subtle text-secondary"><i class="fa-solid fa-gauge"></i></div>
+                        <span class="metric-name">Train Speed</span>
+                    </div>
+                    <div class="metric-val" id="telemetrySpeed">72.0 <span class="metric-val-unit">km/h</span></div>
+                </div>
+
+                <!-- Metric 5: TTC -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-danger-subtle text-danger"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <span class="metric-name">Time to Collision</span>
+                    </div>
+                    <div class="metric-val text-danger" id="telemetryTTC">4.2 <span class="metric-val-unit">s</span></div>
+                </div>
+
+                <!-- Metric 6: Worker Verification -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-success-subtle text-success"><i class="fa-solid fa-id-card"></i></div>
+                        <span class="metric-name">Worker Verification</span>
+                    </div>
+                    <div id="telemetryWorker"><span class="badge bg-danger">Unauthorized</span></div>
+                </div>
+            </div>
+
+            <!-- Active Alert Dispatch Box -->
+            <div class="p-3 bg-light border-top mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="small text-primary"><i class="fa-solid fa-paper-plane me-1"></i> Alert Dispatched:</strong>
+                    <span class="badge bg-success">Automated</span>
+                </div>
+                <div class="d-flex flex-column gap-1 small text-secondary">
+                    <span><i class="fa-solid fa-circle-check text-success me-1"></i> Central Railway Control Room</span>
+                    <span><i class="fa-solid fa-circle-check text-success me-1"></i> Loco Pilot (Cab Radio Broadcast)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     Bottom Row: Live System Alerts Feed & System Health Status
+     ========================================================================== -->
+<div class="row g-4">
+    <!-- Live System Alerts Feed -->
+    <div class="col-12">
+        <div class="rail-card">
+            <div class="rail-card-header">
+                <h3 class="rail-card-title">
+                    <i class="fa-solid fa-bell text-warning"></i>
+                    Live System Alerts Feed
+                </h3>
+                <span class="badge bg-light text-muted border">Real-Time Stream</span>
+            </div>
+            <div class="rail-card-body">
+                <div class="alert-feed-list" id="liveAlertFeed">
+                    <!-- Alert Item 1: Critical -->
+                    <div class="alert-feed-item alert-critical">
+                        <div class="alert-feed-icon"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>
+                        <div class="alert-feed-content">
+                            <div class="alert-feed-title">
+                                <span>CRITICAL: Unauthorized person detected on track</span>
+                                <span class="alert-feed-time">10:24:15</span>
+                            </div>
+                            <div class="alert-feed-desc">
+                                CAM-01 (KM 245/8) • Distance: 18.4m • Train Speed: 72 km/h • TTC: 3.2s
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Item 2: High -->
+                    <div class="alert-feed-item alert-high">
+                        <div class="alert-feed-icon"><i class="fa-solid fa-circle-exclamation text-warning"></i></div>
+                        <div class="alert-feed-content">
+                            <div class="alert-feed-title">
+                                <span>HIGH: Train approaching track area</span>
+                                <span class="alert-feed-time">10:22:08</span>
+                            </div>
+                            <div class="alert-feed-desc">
+                                CAM-02 (KM 246/2) • Distance: 156.0m • Train Speed: 72 km/h
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Item 3: Safe / Worker -->
+                    <div class="alert-feed-item alert-safe">
+                        <div class="alert-feed-icon"><i class="fa-solid fa-circle-check text-success"></i></div>
+                        <div class="alert-feed-content">
+                            <div class="alert-feed-title">
+                                <span>SAFE: Worker EMP_101 verified successfully</span>
+                                <span class="alert-feed-time">10:19:41</span>
+                            </div>
+                            <div class="alert-feed-desc">
+                                CAM-01 (KM 245/8) • Track Maintenance Team • Authorized Entry
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

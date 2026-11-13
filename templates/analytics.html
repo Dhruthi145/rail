@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Safety Analytics & Trends | RailGuard AI{% endblock %}
+{% block page_title %}Safety Analytics & Kinematic Trends{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <!-- Header Controls & Date Filters -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h4 class="fw-bold text-primary mb-1">
+                <i class="fa-solid fa-chart-pie me-2"></i> Safety Intelligence & Collision Risk Analytics
+            </h4>
+            <p class="text-muted small mb-0">
+                Aggregated safety statistics, time-to-collision distributions, and personnel verification trends.
+            </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-rail-primary btn-sm analytics-date-btn active" data-range="today">Today</button>
+                <button type="button" class="btn btn-rail-secondary btn-sm analytics-date-btn" data-range="7d">7 Days</button>
+                <button type="button" class="btn btn-rail-secondary btn-sm analytics-date-btn" data-range="30d">30 Days</button>
+                <button type="button" class="btn btn-rail-secondary btn-sm analytics-date-btn" data-range="custom">Custom</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Summary KPI Metric Cards -->
+    <div class="stats-grid mb-2">
+        <div class="kpi-stat-card kpi-incidents">
+            <div class="kpi-header-row">
+                <span class="kpi-label">Total Incidents</span>
+                <div class="kpi-icon-wrap"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="kpi-number" id="statTotalIncidents">18</div>
+            <div class="kpi-footer-row">
+                <span class="small text-muted"><i class="fa-solid fa-arrow-down text-success me-1"></i> -12% vs last week</span>
+            </div>
+        </div>
+
+        <div class="kpi-stat-card kpi-incidents">
+            <div class="kpi-header-row">
+                <span class="kpi-label">Critical Incidents</span>
+                <div class="kpi-icon-wrap"><i class="fa-solid fa-skull-crossbones"></i></div>
+            </div>
+            <div class="kpi-number text-danger" id="statCriticalIncidents">04</div>
+            <div class="kpi-footer-row">
+                <span class="small text-muted">Immediate collision alerts</span>
+            </div>
+        </div>
+
+        <div class="kpi-stat-card kpi-trains">
+            <div class="kpi-header-row">
+                <span class="kpi-label">Warning Incidents</span>
+                <div class="kpi-icon-wrap"><i class="fa-solid fa-bell"></i></div>
+            </div>
+            <div class="kpi-number text-warning" id="statWarningIncidents">07</div>
+            <div class="kpi-footer-row">
+                <span class="small text-muted">Approaching buffer alerts</span>
+            </div>
+        </div>
+
+        <div class="kpi-stat-card kpi-personnel">
+            <div class="kpi-header-row">
+                <span class="kpi-label">Authorized Entries</span>
+                <div class="kpi-icon-wrap"><i class="fa-solid fa-id-card-clip"></i></div>
+            </div>
+            <div class="kpi-number text-success" id="statAuthorizedEntries">24</div>
+            <div class="kpi-footer-row">
+                <span class="small text-muted">Verified maintenance crew</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1: Risk Level Trend & Authorized vs Unauthorized -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="rail-card h-100">
+                <div class="rail-card-header">
+                    <h3 class="rail-card-title">
+                        <i class="fa-solid fa-chart-line text-primary"></i>
+                        Risk Level Trend Over Time
+                    </h3>
+                    <span class="badge bg-light text-muted border">Temporal Dynamics</span>
+                </div>
+                <div class="rail-card-body" style="height: 330px;">
+                    <canvas id="riskTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="rail-card h-100">
+                <div class="rail-card-header">
+                    <h3 class="rail-card-title">
+                        <i class="fa-solid fa-user-shield text-primary"></i>
+                        Authorized vs Unauthorized
+                    </h3>
+                    <span class="badge bg-light text-muted border">Verification Ratio</span>
+                </div>
+                <div class="rail-card-body d-flex align-items-center justify-content-center" style="height: 330px;">
+                    <canvas id="authVsUnauthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2: Average TTC Kinematic Timeline -->
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="rail-card">
+                <div class="rail-card-header">
+                    <h3 class="rail-card-title">
+                        <i class="fa-solid fa-stopwatch text-danger"></i>
+                        Average Time to Collision (TTC) - Kinematic Buffer Analysis
+                    </h3>
+                    <span class="badge bg-light text-muted border">Weekly Analysis</span>
+                </div>
+                <div class="rail-card-body" style="height: 280px;">
+                    <canvas id="avgTTCChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

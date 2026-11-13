@@ -1,0 +1,324 @@
+/* ==========================================================================
+   RAILGUARD AI - LIVE MONITORING STYLES
+   CCTV Stream, HUD Overlays, ROI Canvas, Detection Summary & Alerts
+   ========================================================================== */
+
+/* Main Monitoring Layout */
+.monitoring-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* Video Player Surveillance Card */
+.cctv-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.cctv-header {
+    padding: 14px 20px;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cctv-cam-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cctv-cam-title h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--rail-primary);
+    margin: 0;
+}
+.cctv-location-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #E0F2FE;
+    color: var(--rail-blue);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.cctv-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FEE2E2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.cctv-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #DC2626;
+    animation: live-blinker 1.2s infinite;
+}
+
+@keyframes live-blinker {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+/* Video Canvas Stage Wrapper */
+.video-stage-container {
+    position: relative;
+    width: 100%;
+    background: #0B1728;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 16 / 9;
+}
+
+.cctv-stream-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ROI Polygon & Detection HUD Canvas Overlay */
+.cctv-hud-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* HUD Header Bar Overlay */
+.hud-stamp-top {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.hud-pill {
+    background: rgba(11, 23, 40, 0.82);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #FFFFFF;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hud-stamp-bottom {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* CCTV Bottom Control Toolbar */
+.cctv-toolbar {
+    padding: 12px 20px;
+    background: #F8FAFC;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+}
+
+.cctv-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--text-secondary);
+}
+
+.cctv-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ==========================================================================
+   Detection Summary Side Panel
+   ========================================================================== */
+.detection-summary-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+}
+
+.detection-summary-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: #F8FAFC;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detection-summary-header h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--rail-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.telemetry-metrics-list {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.telemetry-metric-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #F8FAFC;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    transition: all var(--trans-fast);
+}
+
+.telemetry-metric-item:hover {
+    background: #FFFFFF;
+    border-color: #CBD5E1;
+}
+
+.metric-label-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.metric-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+.metric-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.metric-val {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.metric-val-unit {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-left: 2px;
+}
+
+/* Active Alert Card */
+.active-alerts-panel {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    padding: 18px 20px;
+    margin-top: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.active-alerts-panel.has-critical {
+    border-color: #FECACA;
+    background: #FEF2F2;
+    animation: alertBorderPulse 2.5s infinite;
+}
+
+@keyframes alertBorderPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.15); }
+}
+
+.alert-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.alert-panel-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-destination-box {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.destination-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    color: #065F46;
+    background: #ECFDF5;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+/* Responsive Monitoring */
+@media (max-width: 1100px) {
+    .monitoring-grid {
+        grid-template-columns: 1fr;
+    }
+}

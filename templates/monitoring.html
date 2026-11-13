@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+
+{% block title %}Live CCTV Monitoring | RailGuard AI{% endblock %}
+{% block page_title %}Live CCTV Surveillance Console{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/monitoring.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="monitoring-grid">
+    <!-- ======================================================================
+         LEFT COLUMN: Large CCTV Video Surveillance Viewport & Controls
+         ====================================================================== -->
+    <div class="d-flex flex-column gap-3">
+        <div class="cctv-card">
+            <!-- CCTV Card Header -->
+            <div class="cctv-header">
+                <div class="cctv-cam-title">
+                    <span class="status-dot dot-safe"></span>
+                    <h3>CAM-01</h3>
+                    <span class="cctv-location-tag">KM 245/8 • TRACK SECTOR ALPHA</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-light text-dark border">
+                        <i class="fa-solid fa-expand me-1 text-primary"></i> 1920×1080 FHD
+                    </span>
+                    <span class="cctv-live-badge">
+                        <span class="cctv-live-dot"></span>
+                        LIVE STREAM
+                    </span>
+                </div>
+            </div>
+
+            <!-- Video Player Stage Container -->
+            <div class="video-stage-container" id="videoStage">
+                <!-- Live Stream Feed Image -->
+                <img src="{{ url_for('video_feed') }}" class="cctv-stream-element" id="liveStreamImg" alt="Railway Track CCTV Analysis Stream">
+
+                <!-- Dynamic HTML5 Canvas Overlay for Track ROI & YOLO Bounding Boxes -->
+                <canvas class="cctv-hud-overlay" id="monitoringCanvas"></canvas>
+
+                <!-- HUD Top Metadata Overlay -->
+                <div class="hud-stamp-top">
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-camera text-info"></i>
+                        <span>CAM-01 | KM 245/8</span>
+                    </div>
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-clock text-warning"></i>
+                        <span id="hudLiveTimestamp">10:24:15.02</span>
+                    </div>
+                </div>
+
+                <!-- HUD Bottom Metadata Overlay -->
+                <div class="hud-stamp-bottom">
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-draw-polygon text-warning"></i>
+                        <span>Track ROI: Active Restricted Polygon</span>
+                    </div>
+                    <div class="hud-pill">
+                        <i class="fa-solid fa-microchip text-success"></i>
+                        <span>YOLOv8 + DeepFace Real-Time</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CCTV Action Toolbar -->
+            <div class="cctv-toolbar">
+                <div class="cctv-toolbar-left">
+                    <span><i class="fa-solid fa-signal text-success me-1"></i> Signal: <strong>Strong (14ms)</strong></span>
+                    <span><i class="fa-solid fa-server text-primary me-1"></i> FPS: <strong id="camFps">29.8</strong></span>
+                </div>
+                <div class="cctv-toolbar-right">
+                    <!-- Audio Alarm Controls -->
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="btnTestAlarm" title="Test Emergency Alarm Sound">
+                        <i class="fa-solid fa-volume-high me-1"></i> Test Alarm Sound
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="btnToggleSound" title="Mute or Unmute Safety Siren">
+                        <i class="fa-solid fa-bell me-1"></i> Sound: ON
+                    </button>
+                    <!-- Upload Video Stream Button -->
+                    <button class="btn btn-rail-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadVideoModal">
+                        <i class="fa-solid fa-upload me-1 text-primary"></i> Feed Video File
+                    </button>
+                    <!-- Reset to Standby -->
+                    <a href="{{ url_for('reset_video') }}" class="btn btn-outline-secondary btn-sm" title="Return to Standby Mode">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Standby
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CCTV Status & Calibration Shortcut -->
+        <div class="p-2 px-3 bg-white rounded border border-subtle d-flex justify-content-between align-items-center">
+            <span class="small text-muted">
+                <i class="fa-solid fa-shield-halved text-success me-1"></i> Continuous Track Surveillance Active • Inference: YOLOv8 PyTorch
+            </span>
+            <a href="{{ url_for('settings_page') }}" class="btn btn-sm btn-outline-primary py-1 px-3 text-nowrap">
+                <i class="fa-solid fa-pen-ruler me-1"></i> Tune ROI Polygon
+            </a>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         RIGHT COLUMN: Detection Summary, Active Alert System & Dispatch
+         ====================================================================== -->
+    <div class="d-flex flex-column gap-3">
+        <!-- Detection Summary Panel -->
+        <div class="detection-summary-card">
+            <div class="detection-summary-header">
+                <h4><i class="fa-solid fa-chart-line text-primary"></i> Detection Summary</h4>
+                <span id="monRiskBadge" class="badge-risk badge-risk-safe">
+                    <i class="fa-solid fa-shield-halved"></i> SAFE
+                </span>
+            </div>
+
+            <div class="telemetry-metrics-list">
+                <!-- 1. Persons Detected -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-info-subtle text-info"><i class="fa-solid fa-person"></i></div>
+                        <span class="metric-name">Persons Detected</span>
+                    </div>
+                    <div class="metric-val text-primary" id="monPersonsCount">01</div>
+                </div>
+
+                <!-- 2. Trains Detected -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-warning-subtle text-warning"><i class="fa-solid fa-train"></i></div>
+                        <span class="metric-name">Trains Detected</span>
+                    </div>
+                    <div class="metric-val text-warning" id="monTrainsCount">01</div>
+                </div>
+
+                <!-- 3. Distance -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-primary-subtle text-primary"><i class="fa-solid fa-ruler-horizontal"></i></div>
+                        <span class="metric-name">Distance</span>
+                    </div>
+                    <div>
+                        <span class="metric-val" id="monDistance">156.0</span>
+                        <span class="metric-val-unit">m</span>
+                    </div>
+                </div>
+
+                <!-- 4. Train Speed -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-secondary-subtle text-secondary"><i class="fa-solid fa-gauge-high"></i></div>
+                        <span class="metric-name">Train Speed</span>
+                    </div>
+                    <div>
+                        <span class="metric-val" id="monSpeed">72.0</span>
+                        <span class="metric-val-unit">km/h</span>
+                    </div>
+                </div>
+
+                <!-- 5. Time to Collision (TTC) -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-danger-subtle text-danger"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <span class="metric-name">Time to Collision (TTC)</span>
+                    </div>
+                    <div>
+                        <span class="metric-val text-danger" id="monTTC">4.2</span>
+                        <span class="metric-val-unit">s</span>
+                    </div>
+                </div>
+
+                <!-- 6. Personnel Authorization & PPE Verification -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-success-subtle text-success"><i class="fa-solid fa-id-card-clip"></i></div>
+                        <span class="metric-name">Personnel Authorization</span>
+                    </div>
+                    <div id="monWorkerVerification"><span class="badge bg-secondary text-white">None</span></div>
+                </div>
+
+                <!-- 7. Risk Level -->
+                <div class="telemetry-metric-item">
+                    <div class="metric-label-group">
+                        <div class="metric-icon bg-danger-subtle text-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <span class="metric-name">Current Risk Level</span>
+                    </div>
+                    <div class="fw-bold text-danger" id="monRiskLevel">CRITICAL</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incident Alert System Panel -->
+        <div class="active-alerts-panel" id="monActiveAlertCard">
+            <div class="alert-panel-header">
+                <span class="alert-panel-title text-danger">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    ACTIVE INCIDENT ALERT
+                </span>
+                <span class="badge bg-danger text-white">Live Alert</span>
+            </div>
+
+            <div class="fw-bold text-dark mb-1" id="monAlertMessage">
+                Unauthorized person detected on track area
+            </div>
+            <div class="small text-muted mb-3 font-mono">
+                CAM-01 • KM 245/8 • Sector Alpha
+            </div>
+
+            <div class="alert-destination-box">
+                <div class="fw-bold text-primary mb-2 small">
+                    <i class="fa-solid fa-bullhorn me-1"></i> SAFETY ALERT DISPATCHED TO:
+                </div>
+                <div class="d-flex flex-column gap-2" id="monAlertDestinations">
+                    <span class="destination-badge">
+                        <i class="fa-solid fa-circle-check"></i> Central Railway Control Room
+                    </span>
+                    <span class="destination-badge">
+                        <i class="fa-solid fa-circle-check"></i> Loco Pilot (Train In-Cab Alert Radio)
+                    </span>
+                </div>
+                <div class="mt-2 text-muted" style="font-size: 11px;">
+                    <i class="fa-solid fa-info-circle me-1"></i> Decision support system: Provides early collision warning.
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button class="btn btn-rail-primary w-100 btn-sm" id="btnAcknowledgeAlert">
+                    <i class="fa-solid fa-check-double me-1"></i> Acknowledge Alert
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     Bottom Row: Live System Alerts Feed (Synchronized Real-Time Stream)
+     ========================================================================== -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="rail-card">
+            <div class="rail-card-header">
+                <h3 class="rail-card-title">
+                    <i class="fa-solid fa-bell text-warning"></i>
+                    Live System Alerts Feed
+                </h3>
+                <span class="badge bg-light text-muted border">Real-Time Stream</span>
+            </div>
+            <div class="rail-card-body">
+                <div class="alert-feed-list" id="liveAlertFeed">
+                    <!-- Alert Item 1: Critical -->
+                    <div class="alert-feed-item alert-critical">
+                        <div class="alert-feed-icon"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>
+                        <div class="alert-feed-content">
+                            <div class="alert-feed-title">
+                                <span>CRITICAL: Unauthorized person detected on track</span>
+                                <span class="alert-feed-time">10:24:15</span>
+                            </div>
+                            <div class="alert-feed-desc">
+                                CAM-01 (KM 245/8) • Distance: 18.4m • Train Speed: 72 km/h • TTC: 3.2s
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Item 2: High -->
+                    <div class="alert-feed-item alert-high">
+                        <div class="alert-feed-icon"><i class="fa-solid fa-circle-exclamation text-warning"></i></div>
+                        <div class="alert-feed-content">
+                            <div class="alert-feed-title">
+                                <span>HIGH: Train approaching track area</span>
+                                <span class="alert-feed-time">10:22:08</span>
+                            </div>
+                            <div class="alert-feed-desc">
+                                CAM-02 (KM 246/2) • Distance: 156.0m • Train Speed: 72 km/h
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Item 3: Safe / Worker -->
+                    <div class="alert-feed-item alert-safe">
+                        <div class="alert-feed-icon"><i class="fa-solid fa-circle-check text-success"></i></div>
+                        <div class="alert-feed-content">
+                            <div class="alert-feed-title">
+                                <span>SAFE: Worker EMP_001 verified successfully</span>
+                                <span class="alert-feed-time">10:19:41</span>
+                            </div>
+                            <div class="alert-feed-desc">
+                                CAM-01 (KM 245/8) • Track Maintenance Team • Authorized Entry
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     Upload CCTV Video Modal
+     ========================================================================== -->
+<div class="modal fade" id="uploadVideoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa-solid fa-video me-2"></i>Feed Video File to AI Engine</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('upload_video') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <p class="text-secondary small mb-3">
+                        Upload a video recording (.mp4, .avi, .mov) of railway tracks to execute real-time YOLOv8 object detection, ROI intrusion analysis, and TTC calculations.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label">Select Video File</label>
+                        <input type="file" name="file" class="form-control" accept="video/*" required>
+                    </div>
+                    <div class="p-3 bg-light rounded border small text-muted">
+                        <i class="fa-solid fa-circle-info text-info me-1"></i> The AI inference engine processes incoming video frames sequentially at 30 FPS.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-rail-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-rail-primary">
+                        <i class="fa-solid fa-play me-1"></i> Upload & Begin Surveillance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/monitoring.js') }}"></script>
+{% endblock %}
