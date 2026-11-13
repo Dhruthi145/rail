@@ -1,0 +1,29 @@
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Database & SQLite Locks
+*.db-journal
+*.db-wal
+*.db-shm
+
+# IDE & OS Metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# User Uploaded Videos (large binaries)
+# Keep directory structure with .gitkeep
+uploads/*
+!uploads/.gitkeep
+!uploads/demo_scenario.mp4
+!uploads/sample_track_intrusion.mp4

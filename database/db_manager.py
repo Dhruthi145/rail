@@ -194,7 +194,8 @@ def verify_hash_chain():
     if not rows:
         return True, None
 
-    prev_hash = "GENESIS_BLOCK_00000000000000000000000000000000"
+    # Anchor to the first available record's prev_hash (genesis or chain anchor)
+    prev_hash = rows[0][12]
     for row in rows:
         row_id, timestamp, cam_id, loc, p_stat, w_id, t_stat, speed, dist, ttc, r_lvl, a_stat, stored_prev, stored_curr = row
         

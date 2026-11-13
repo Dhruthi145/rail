@@ -89,7 +89,7 @@ class RailwayDetector:
                         verification_status = "AUTHORIZED"
                         self.intruder_memory_frames = 0
                         cv2.rectangle(frame, (xyxy[0], xyxy[1]), (xyxy[2], xyxy[3]), (0, 255, 0), 2)
-                        cv2.putText(frame, "WORKER: EMP001 [ORANGE VEST + CAP]", (xyxy[0], max(16, xyxy[1] - 8)),
+                        cv2.putText(frame, "WORKER: EMP001", (xyxy[0], max(16, xyxy[1] - 8)),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.50, (0, 255, 0), 2)
                     else:
                         unauthorized_in_roi = True
@@ -131,7 +131,12 @@ class RailwayDetector:
 
         # Run Kinematic Risk Analysis
         telemetry = self.risk_analyzer.analyze(
-            unauthorized_in_roi, train_detected, active_person_box, primary_train_box
+            unauthorized_person_detected=unauthorized_in_roi,
+            train_detected=train_detected,
+            person_box=active_person_box,
+            train_box=primary_train_box,
+            person_in_roi=any_person_in_roi,
+            is_authorized=(verification_status == "AUTHORIZED")
         )
         telemetry["worker_id"] = worker_id_label
         telemetry["verification_status"] = verification_status
@@ -144,18 +149,27 @@ class RailwayDetector:
 
         # HUD Color Palette & Risk Level Status Text
         raw_risk = telemetry["risk_level"]
-        if "CRITICAL" in raw_risk:
+        raw_risk_upper = raw_risk.upper()
+        if "CRITICAL" in raw_risk_upper:
             risk_color = (0, 0, 255)   # Red
-            status_text = "CRITICAL: COLLISION RISK"
+            status_text = "CRITICAL: WORKER COLLISION RISK" if verification_status == "AUTHORIZED" else "CRITICAL: COLLISION RISK"
             alert_msg = "🚨 EMERGENCY WARNING DISPATCHED TO CONTROL ROOM & LOCO PILOT"
-        elif "High" in raw_risk:
+        elif "HIGH" in raw_risk_upper:
             risk_color = (0, 140, 255) # Orange
             status_text = "HIGH RISK: TRAIN APPROACHING"
             alert_msg = "⚠️ HIGH ALERT: TRAIN IN VICINITY OF TRACK OCCUPANT"
-        elif "Medium" in raw_risk or "WARNING" in raw_risk:
+        elif "WARNING" in raw_risk_upper or "MEDIUM" in raw_risk_upper:
             risk_color = (0, 255, 255) # Yellow
-            status_text = "WARNING: TRACK OCCUPIED"
-            alert_msg = "⚠️ MONITORING: UNAUTHORIZED PERSON ON RESTRICTED TRACK"
+            if unauthorized_in_roi:
+                status_text = "WARNING: TRACK OCCUPIED"
+                alert_msg = "⚠️ MONITORING: UNAUTHORIZED PERSON ON RESTRICTED TRACK"
+            else:
+                status_text = "SAFETY WARNING: WORKER ON TRACK"
+                alert_msg = "⚠️ SAFETY ALERT: TRAIN IN VICINITY OF AUTHORIZED WORKER"
+        elif "CAUTION" in raw_risk_upper:
+            risk_color = (0, 200, 255) # Amber
+            status_text = "CAUTION: TRAIN APPROACHING"
+            alert_msg = "ℹ️ TRAIN APPROACHING - TRACK CLEAR"
         else:
             risk_color = (0, 255, 0)   # Green
             status_text = "TRACK SAFE"
@@ -167,14 +181,15 @@ class RailwayDetector:
         # Draw Track ROI Polygon onto video frame (visible on Dashboard & Live Monitoring)
         roi_pts = np.array(self.default_roi_coords, np.int32).reshape((-1, 1, 2))
 
+        is_collision_hazard = bool(any_person_in_roi and train_detected)
         # Subtle semi-transparent fill
         overlay = frame.copy()
-        fill_color = (0, 0, 160) if unauthorized_in_roi else (160, 100, 20)
+        fill_color = (0, 0, 160) if (unauthorized_in_roi or is_collision_hazard) else (160, 100, 20)
         cv2.fillPoly(overlay, [roi_pts], fill_color)
         cv2.addWeighted(overlay, 0.18, frame, 0.82, 0, frame)
 
         # Crisp perimeter border
-        border_color = (0, 0, 255) if unauthorized_in_roi else (255, 165, 0)
+        border_color = (0, 0, 255) if (unauthorized_in_roi or is_collision_hazard) else (255, 165, 0)
         cv2.polylines(frame, [roi_pts], isClosed=True, color=border_color, thickness=2, lineType=cv2.LINE_AA)
 
         # Corner anchor points
@@ -184,7 +199,12 @@ class RailwayDetector:
 
         # ROI Header Label Tag
         p_top = self.default_roi_coords[1]
-        roi_tag = "TRACK ROI: INTRUSION ACTIVE" if unauthorized_in_roi else "TRACK ROI: MONITORED ZONE"
+        if unauthorized_in_roi:
+            roi_tag = "TRACK ROI: INTRUSION ACTIVE"
+        elif is_collision_hazard:
+            roi_tag = "TRACK ROI: COLLISION HAZARD"
+        else:
+            roi_tag = "TRACK ROI: MONITORED ZONE"
         cv2.putText(frame, roi_tag, (p_top[0] - 10, max(24, p_top[1] - 8)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.42, border_color, 1, lineType=cv2.LINE_AA)
 
@@ -198,4 +218,4 @@ class RailwayDetector:
         cv2.putText(frame, info_text, (20, 62), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1)
 
         self.last_telemetry = telemetry
-        return frame, telemetry
+        return frame, telemetry

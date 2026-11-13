@@ -72,7 +72,7 @@ function renderIncidents(incidents) {
         let riskClass = 'badge-risk-safe';
         if (risk.includes('CRITICAL')) riskClass = 'badge-risk-critical';
         else if (risk.includes('HIGH')) riskClass = 'badge-risk-high';
-        else if (risk.includes('WARNING')) riskClass = 'badge-risk-warning';
+        else if (risk.includes('WARNING') || risk.includes('WARN') || risk.includes('CAUTION')) riskClass = 'badge-risk-warning';
 
         return `
             <tr>
@@ -137,7 +137,7 @@ function viewIncidentDetail(id) {
     let riskBadgeClass = 'badge-risk-safe';
     if (risk.includes('CRITICAL')) riskBadgeClass = 'badge-risk-critical';
     else if (risk.includes('HIGH')) riskBadgeClass = 'badge-risk-high';
-    else if (risk.includes('WARNING')) riskBadgeClass = 'badge-risk-warning';
+    else if (risk.includes('WARNING') || risk.includes('WARN') || risk.includes('CAUTION')) riskBadgeClass = 'badge-risk-warning';
 
     modalBody.innerHTML = `
         <div class="row g-3">

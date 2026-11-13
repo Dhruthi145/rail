@@ -54,14 +54,18 @@ function initSidebar() {
     const sidebar = document.getElementById('appSidebar');
     const overlay = document.getElementById('sidebarOverlay');
 
-    if (!toggleBtn || !sidebar) return;
+    if (!toggleBtn) return;
 
-    toggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('sidebar-open');
-        if (overlay) overlay.classList.toggle('active');
+    toggleBtn.addEventListener('click', (e) => {
+        // Clicking the 3-lines icon opens About & Accuracy modal directly
+        const aboutModalEl = document.getElementById('aboutProjectModal');
+        if (aboutModalEl && typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getOrCreateInstance(aboutModalEl);
+            modal.show();
+        }
     });
 
-    if (overlay) {
+    if (overlay && sidebar) {
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('sidebar-open');
             overlay.classList.remove('active');
@@ -169,7 +173,11 @@ function updateDashboardTelemetry(data) {
         lastLoggedRisk = riskLevel;
     }
 
-    // 5. Audio Alarm: ONLY sound when person is in ROI AND train is approaching!
+    // 5. Audio Alarm for 4 Safety Conditions:
+    // - Condition 1: Unauthorized person on restricted track -> Intrusion Siren
+    // - Condition 2 & 4: Any person on restricted track with train approaching -> Collision Safety Siren
+    // - Condition 3: Authorized worker on track without train -> SILENT
+    const unauthorizedInRoi = Boolean(data.unauthorized_in_roi);
     const personInRoi = Boolean(data.person_in_roi || data.unauthorized_in_roi);
     const trainsDetected = Number(data.train_count || 0) > 0;
     const trainPresent = Boolean(data.train_present);
@@ -179,10 +187,13 @@ function updateDashboardTelemetry(data) {
         riskUpper.includes('TRAIN APPROACHING') || 
         riskUpper.includes('APPROACHING TRAIN') || 
         riskUpper.includes('COLLISION RISK') ||
+        riskUpper.includes('WORKER COLLISION') ||
         alertUpper.includes('TRAIN') ||
         (Number(data.train_speed || 0) > 0 && Number(data.distance || 0) > 0);
 
-    const shouldAlarm = personInRoi && isTrainApproaching;
+    const isCollisionRisk = personInRoi && isTrainApproaching;
+    const isIntrusionAlert = unauthorizedInRoi;
+    const shouldAlarm = isIntrusionAlert || isCollisionRisk;
     handleDashboardAudioAlert(data, shouldAlarm);
 }
 
@@ -210,6 +221,11 @@ function updateRiskIndicator(riskStr) {
         pos = '38%';
         color = '#F59E0B';
         text = 'WARNING';
+        badgeClass = 'badge-risk-warning';
+    } else if (riskStr.includes('CAUTION')) {
+        pos = '25%';
+        color = '#F59E0B';
+        text = 'CAUTION';
         badgeClass = 'badge-risk-warning';
     } else {
         pos = '12%';
@@ -240,12 +256,13 @@ function updatePipelineFlow(data) {
     const inRoi = Boolean(data.person_in_roi);
     const isAuth = data.verification_status === 'AUTHORIZED';
     const isCritical = (data.risk_level || '').toUpperCase().includes('CRITICAL');
+    const isAlertActive = isCritical || (data.risk_level || '').toUpperCase().includes('HIGH') || (data.risk_level || '').toUpperCase().includes('WARN') || (data.alert_status || '').toUpperCase().includes('DISPATCH');
 
     setNodeState(nodePerson, hasPerson ? 'completed' : 'waiting', hasPerson ? 'Detected' : 'Waiting');
     setNodeState(nodeRoi, inRoi ? 'completed' : hasPerson ? 'processing' : 'waiting', inRoi ? 'Inside ROI' : 'Clear');
     setNodeState(nodeVerify, hasPerson ? (isAuth ? 'completed' : 'processing') : 'waiting', isAuth ? 'Authorized' : hasPerson ? 'Unverified' : 'Idle');
     setNodeState(nodeRisk, inRoi ? 'completed' : 'waiting', data.risk_level || 'Safe');
-    setNodeState(nodeAlert, isCritical ? 'processing' : 'waiting', isCritical ? 'Dispatched' : 'Nominal');
+    setNodeState(nodeAlert, isCritical ? 'processing' : (isAlertActive ? 'processing' : 'waiting'), isCritical ? 'Dispatched' : (isAlertActive ? 'Alert Active' : 'Nominal'));
 }
 
 function setNodeState(el, stateClass, statusText) {
@@ -271,7 +288,7 @@ function addAlertFeedItem(data) {
     } else if (risk.includes('HIGH')) {
         riskClass = 'alert-high';
         icon = 'fa-circle-exclamation text-warning';
-    } else if (risk.includes('WARNING')) {
+    } else if (risk.includes('WARNING') || risk.includes('WARN') || risk.includes('CAUTION')) {
         riskClass = 'alert-warning';
         icon = 'fa-bell text-warning';
     }

@@ -94,7 +94,10 @@ function renderMonitoringTelemetry(data) {
     } else if (risk.includes('HIGH')) {
         badgeClass = 'badge-risk-high';
         riskIcon = 'fa-circle-exclamation';
-    } else if (risk.includes('WARNING')) {
+    } else if (risk.includes('WARNING') || risk.includes('WARN')) {
+        badgeClass = 'badge-risk-warning';
+        riskIcon = 'fa-bell';
+    } else if (risk.includes('CAUTION')) {
         badgeClass = 'badge-risk-warning';
         riskIcon = 'fa-bell';
     }
@@ -129,7 +132,7 @@ function renderMonitoringTelemetry(data) {
     }
 
     if (alertMsgEl) {
-        alertMsgEl.textContent = data.alert_message || (isCritical ? 'CRITICAL: Unauthorized person on restricted track!' : 'Normal Track Operations - Zone Clear');
+        alertMsgEl.textContent = data.alert_message || (isCritical ? 'CRITICAL: Safety risk on restricted track!' : 'Normal Track Operations - Zone Clear');
     }
 
     // 4. Live Alert Feed Logging (Real-time feed sync)
@@ -138,7 +141,12 @@ function renderMonitoringTelemetry(data) {
         lastMonLoggedRisk = risk;
     }
 
-    // 5. Update Audio Alarm: ONLY sound when a person is in the ROI AND a train is approaching!
+    // 5. Update Audio Alarm for 4 Safety Conditions:
+    // - Condition 1: Unauthorized Person on Track (ROI) -> Trigger Intrusion Siren
+    // - Condition 2: Unauthorized Person + Train Detected -> Trigger Critical Collision Siren
+    // - Condition 3: Authorized Person on Track (ROI) with NO Train -> Do NOT trigger Siren
+    // - Condition 4: Authorized Person + Train Detected -> Trigger Safety Collision Siren
+    const unauthorizedInRoi = Boolean(data.unauthorized_in_roi);
     const personInRoi = Boolean(data.person_in_roi || data.unauthorized_in_roi);
     const trainsDetected = Number(data.train_count || 0) > 0;
     const trainPresent = Boolean(data.train_present);
@@ -148,11 +156,13 @@ function renderMonitoringTelemetry(data) {
         riskUpper.includes('TRAIN APPROACHING') || 
         riskUpper.includes('APPROACHING TRAIN') || 
         riskUpper.includes('COLLISION RISK') ||
+        riskUpper.includes('WORKER COLLISION') ||
         alertUpper.includes('TRAIN') ||
         (Number(data.train_speed || 0) > 0 && Number(data.distance || 0) > 0);
 
-    // ONLY sound if PERSON IN ROI AND TRAIN IS APPROACHING
-    const shouldAlarm = personInRoi && isTrainApproaching;
+    const isCollisionRisk = personInRoi && isTrainApproaching;
+    const isIntrusionAlert = unauthorizedInRoi;
+    const shouldAlarm = isIntrusionAlert || isCollisionRisk;
     handleAudioAlert(data, shouldAlarm);
 
     // 6. Clean Canvas Update
@@ -176,7 +186,7 @@ function addMonitoringAlertFeedItem(data) {
     } else if (risk.includes('HIGH')) {
         riskClass = 'alert-high';
         icon = 'fa-circle-exclamation text-warning';
-    } else if (risk.includes('WARNING') || risk.includes('WARN')) {
+    } else if (risk.includes('WARNING') || risk.includes('WARN') || risk.includes('CAUTION')) {
         riskClass = 'alert-warning';
         icon = 'fa-bell text-warning';
     }

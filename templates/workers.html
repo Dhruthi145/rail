@@ -12,7 +12,8 @@
                 <i class="fa-solid fa-id-card-clip me-2"></i> Track Personnel Verification & Biometrics
             </h4>
             <p class="text-muted small mb-0">
-                Track maintenance and signal engineers regularly access rail corridors. RailGuard AI verifies detected individuals via DeepFace biometric analysis before classifying any detection as an intrusion.
+                Track maintenance and signal engineers regularly access rail corridors. RailGuard AI verifies detected
+                individuals via DeepFace biometric analysis before classifying any detection as an intrusion.
             </p>
         </div>
         <div>
@@ -38,7 +39,8 @@
                 </div>
                 <div class="rail-card-body">
                     <p class="small text-secondary mb-3">
-                        Upload or capture a personnel snapshot from CCTV or handheld ID terminal to test against authorized employee biometric database.
+                        Upload or capture a personnel snapshot from CCTV or handheld ID terminal to test against
+                        authorized employee biometric database.
                     </p>
 
                     <div class="mb-3">
@@ -46,30 +48,56 @@
                         <input type="file" id="testFaceInput" class="form-control" accept="image/*">
                     </div>
 
-                    <!-- Image Preview Area -->
-                    <div class="text-center p-3 bg-light rounded border mb-3">
-                        <img id="testFacePreview" src="" class="img-fluid rounded border d-none" style="max-height: 200px; object-fit: cover;" alt="Captured Person Face Preview">
-                        <div id="previewPlaceholder" class="text-muted small py-3">
-                            <i class="fa-solid fa-user-shield fs-1 text-secondary mb-2 d-block"></i>
-                            Select a face image to preview detection & verification.
+                    <!-- High-Tech Biometric Scanner Stage -->
+                    <div class="biometric-scanner-stage mb-3" id="biometricScannerStage">
+                        <!-- Corner Alignment HUD Brackets -->
+                        <div class="scanner-corner scanner-corner-tl"></div>
+                        <div class="scanner-corner scanner-corner-tr"></div>
+                        <div class="scanner-corner scanner-corner-bl"></div>
+                        <div class="scanner-corner scanner-corner-br"></div>
+
+                        <!-- HUD Diagnostic Tags -->
+                        <span class="scanner-hud-tag scanner-hud-tag-top">
+                            <i class="fa-solid fa-fingerprint me-1"></i>VGGFACE2 / 512-D EMBEDDINGS
+                        </span>
+                        <span class="scanner-hud-tag scanner-hud-tag-bottom">
+                            <i class="fa-solid fa-crosshairs me-1"></i>BIOMETRIC TARGETING
+                        </span>
+
+                        <!-- Animated Laser Scanner Beam -->
+                        <div class="scanner-laser-beam" id="scannerLaserBeam"></div>
+
+                        <!-- Rotating Targeting Reticle -->
+                        <div class="scanner-reticle-ring" id="scannerReticleRing"></div>
+
+                        <!-- Uploaded Face Image Preview -->
+                        <img id="testFacePreview" src="" class="biometric-preview-img d-none" alt="Captured Personnel Face Preview">
+
+                        <!-- Futuristic Animated Vector Illustration Placeholder -->
+                        <div id="previewPlaceholder" class="scanner-placeholder-wrap">
+                            <img src="{{ url_for('static', filename='images/biometrics/biometric-scan.svg') }}" 
+                                 class="scanner-placeholder-img" alt="Biometric Face Scanner Active">
+                            <div class="text-white-50 small mt-2">
+                                <span class="d-inline-flex align-items-center gap-1">
+                                    <span class="status-dot dot-safe"></span> Ready for personnel face snapshot
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <button class="btn btn-rail-primary w-100" id="btnRunFaceTest">
+                    <button class="btn btn-rail-primary w-100 py-2 shadow-sm" id="btnRunFaceTest">
                         <i class="fa-solid fa-id-card-clip me-1"></i> Verify Captured Face
                     </button>
 
-                    <!-- Dynamic Verification Result Box -->
+                    <!-- Real-Time Biometric Analysis Ticker -->
+                    <div id="biometricStatusTicker" class="biometric-status-ticker d-none">
+                        <i class="fa-solid fa-satellite-dish fa-spin text-info"></i>
+                        <span id="tickerText">INITIALIZING BIOMETRIC EXTRACTION...</span>
+                    </div>
+
+                    <!-- Dynamic Verification Result Box (Animated Entrance) -->
                     <div id="testFaceResultBox" class="d-none"></div>
 
-                    <div class="mt-4 p-3 bg-light rounded border border-subtle small text-muted">
-                        <div class="fw-bold text-dark mb-1"><i class="fa-solid fa-circle-info text-info me-1"></i> Two-Stage Verification Policy:</div>
-                        <ul class="mb-0 ps-3">
-                            <li><strong>Stage 1 - Safety Costume (PPE):</strong> Detects Yellow Safety Helmet and High-Vis Fluorescent Orange Vest. Non-PPE persons are immediately flagged as Intruders.</li>
-                            <li><strong>Stage 2 - Facial Biometrics:</strong> DeepFace biometric verification against registered personnel (EMP001).</li>
-                            <li><strong>Authorized Status:</strong> Granted only when PPE costume is verified and face matches registered worker (EMP001).</li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </div>
@@ -130,7 +158,8 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Employee ID *</label>
-                        <input type="text" name="employee_id" class="form-control font-mono" placeholder="e.g. EMP_101" required>
+                        <input type="text" name="employee_id" class="form-control font-mono" placeholder="e.g. EMP_101"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Full Name *</label>
@@ -147,10 +176,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Face Image for Biometric Matching *</label>
-                        <input type="file" name="face_image" id="workerImageInput" class="form-control" accept="image/*" required>
+                        <input type="file" name="face_image" id="workerImageInput" class="form-control" accept="image/*"
+                            required>
                     </div>
                     <div class="text-center p-2 bg-light rounded border mb-2">
-                        <img id="workerImagePreview" src="" class="img-fluid rounded border d-none" style="max-height: 140px; object-fit: cover;" alt="Worker Preview">
+                        <img id="workerImagePreview" src="" class="img-fluid rounded border d-none"
+                            style="max-height: 140px; object-fit: cover;" alt="Worker Preview">
                     </div>
                 </div>
                 <div class="modal-footer">
